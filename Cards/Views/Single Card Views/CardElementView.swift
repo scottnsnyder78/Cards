@@ -1,4 +1,4 @@
-/// Copyright (c) 2023 Kodeco
+/// Copyright (c) 2025 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -32,71 +32,41 @@
 
 import SwiftUI
 
-struct ResizableView: ViewModifier {
-    @Binding var transform: Transform
-    @State private var previousOffset: CGSize = .zero
-    @State private var previousRotation: Angle = .zero
-    @State private var scale: CGFloat = 1.0
-
-  var dragGesture: some Gesture {
-    DragGesture()
-      .onChanged { value in
-        transform.offset = value.translation + previousOffset
-      }
-      .onEnded { _ in
-        previousOffset = transform.offset
-      }
-  }
-
-  var rotationGesture: some Gesture {
-    RotationGesture()
-      .onChanged { rotation in
-        transform.rotation += rotation - previousRotation
-        previousRotation = rotation
-      }
-      .onEnded { _ in
-        previousRotation = .zero
-      }
-  }
-
-  var scaleGesture: some Gesture {
-    MagnificationGesture()
-      .onChanged { scale in
-        self.scale = scale
-      }
-      .onEnded { scale in
-        transform.size.width *= scale
-        transform.size.height *= scale
-        self.scale = 1.0
-      }
-  }
-
-  func body(content: Content) -> some View {
-    content
-      .frame(
-        width: transform.size.width,
-        height: transform.size.height)
-      .rotationEffect(transform.rotation)
-      .scaleEffect(scale)
-      .offset(transform.offset)
-      .gesture(dragGesture)
-      .gesture(SimultaneousGesture(rotationGesture, scaleGesture))
-      .onAppear {
-       previousOffset = transform.offset
-      }
-  }
+struct CardElementView: View {
+    let element: CardElement
+    var body: some View {
+        if let element = element as? ImageElement {
+            ImageElementView(element: element)
+        }
+        if let element = element as? TextElement {
+            TextElementView(element: element)
+        }
+    }
 }
 
-struct ResizableView_Previews: PreviewProvider {
-  static var previews: some View {
-    RoundedRectangle(cornerRadius: 30.0)
-      .foregroundColor(Color.blue)
-      .resizableView(transform: .constant(Transform()))
-  }
+struct ImageElementView: View {
+    let element: ImageElement
+    var body: some View {
+        element.image
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+    }
 }
 
-extension View {
-    func resizableView(transform: Binding<Transform>) -> some View {
-    modifier(ResizableView(transform: transform))
-  }
+struct TextElementView: View {
+    let element: TextElement
+    var body: some View {
+        if !element.text.isEmpty {
+            Text(element.text)
+                .font(.custom(element.textFont, size: 200))
+                .foregroundColor(element.textColor)
+                .scalableText()
+        }
+    }
+}
+
+struct CardElementView_Previews: PreviewProvider {
+    static var previews: some View {
+        CardElementView(element: initialElements[0])
+    }
 }
