@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco
+/// Copyright (c) 2023 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -30,18 +30,18 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
 import SwiftUI
+
 class CardStore: ObservableObject {
-    @Published var cards: [Card] = []
+  @Published var cards: [Card] = []
 
-    init(defaultData: Bool = false) {
-        if defaultData {
-            cards = initialCards
-        }
+  init(defaultData: Bool = false) {
+    if defaultData {
+      cards = initialCards
     }
+  }
 
-    func index(for card: Card) -> Int? {
-        cards.firstIndex { $0.id == card.id }
-    }
+  func index(for card: Card) -> Int? {
+    cards.firstIndex { $0.id == card.id }
+  }
 }

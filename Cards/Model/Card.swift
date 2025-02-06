@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco
+/// Copyright (c) 2023 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -36,4 +36,9 @@ struct Card: Identifiable {
     let id = UUID()
     var backgroundColor: Color = .yellow
     var elements: [CardElement] = []
+    
+    mutating func addElement(uiImage: UIImage) {
+        let element = ImageElement(uiImage: uiImage)
+        elements.append(element)
+    }
 }

@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco
+/// Copyright (c) 2023 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -33,34 +33,33 @@
 import SwiftUI
 
 struct CardDetailView: View {
-    // 1
-    @EnvironmentObject var store: CardStore
-    @Binding var card: Card
-    var body: some View {
-        // 2
-        ZStack {
-            card.backgroundColor
-            ForEach($card.elements, id: \.id) { $element in
-                CardElementView(element: element)
-                    .resizableView(transform: $element.transform)
-                    .frame(
-                        width: element.transform.size.width,
-                        height: element.transform.size.height)
-            }
-        }
+  @EnvironmentObject var store: CardStore
+  @Binding var card: Card
+
+  var body: some View {
+    ZStack {
+      card.backgroundColor
+      ForEach($card.elements, id: \.id) { $element in
+        CardElementView(element: element)
+          .resizableView(transform: $element.transform)
+          .frame(
+            width: element.transform.size.width,
+            height: element.transform.size.height)
+      }
     }
+  }
 }
 
-
 struct CardDetailView_Previews: PreviewProvider {
-    struct CardDetailPreview: View {
-        @EnvironmentObject var store: CardStore
-        var body: some View {
-            CardDetailView(card: $store.cards[0])
-        }
+  struct CardDetailPreview: View {
+    @EnvironmentObject var store: CardStore
+    var body: some View {
+      CardDetailView(card: $store.cards[0])
     }
-    static var previews: some View {
-        CardDetailPreview()
-            .environmentObject(CardStore(defaultData: true))
-    }
+  }
+
+  static var previews: some View {
+    CardDetailPreview()
+      .environmentObject(CardStore(defaultData: true))
+  }
 }

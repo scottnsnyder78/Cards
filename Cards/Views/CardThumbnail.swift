@@ -33,19 +33,19 @@
 import SwiftUI
 
 struct CardThumbnail: View {
-    let card: Card
+  let card: Card
 
-    var body: some View {
-        RoundedRectangle(cornerRadius: 15)
-            .foregroundColor(card.backgroundColor)
-            .frame(
-                width: Settings.thumbnailSize.width,
-                height: Settings.thumbnailSize.height)
-    }
+  var body: some View {
+    RoundedRectangle(cornerRadius: 15)
+      .foregroundColor(card.backgroundColor)
+      .frame(
+        width: Settings.thumbnailSize.width,
+        height: Settings.thumbnailSize.height)
+  }
 }
 
 struct CardThumbnail_Previews: PreviewProvider {
-    static var previews: some View {
-        CardThumbnail(card: initialCards[0])
-    }
+  static var previews: some View {
+    CardThumbnail(card: initialCards[0])
+  }
 }

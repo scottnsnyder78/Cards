@@ -1,4 +1,4 @@
-/// Copyright (c) 2025 Kodeco
+/// Copyright (c) 2023 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -30,30 +30,35 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import Foundation
 import SwiftUI
 
 protocol CardElement {
-    var id: UUID { get }
-    var transform: Transform { get set }
+  var id: UUID { get }
+  var transform: Transform { get set }
 }
 
 extension CardElement {
-    func index(in array: [CardElement]) -> Int? {
-        array.firstIndex { $0.id == id }
-    }
+  func index(in array: [CardElement]) -> Int? {
+    array.firstIndex { $0.id == id }
+  }
 }
 
 struct ImageElement: CardElement {
     let id = UUID()
     var transform = Transform()
-    var image: Image
+    var image: Image {
+        Image(
+            uiImage: uiImage ??
+            UIImage(named: "error-image") ??
+            UIImage())
+    }
+    var uiImage: UIImage?
 }
 
 struct TextElement: CardElement {
-    let id = UUID()
-    var transform = Transform()
-    var text = ""
-    var textColor = Color.black
-    var textFont = "Gill Sans"
+  let id = UUID()
+  var transform = Transform()
+  var text = ""
+  var textColor = Color.black
+  var textFont = "Gill Sans"
 }
