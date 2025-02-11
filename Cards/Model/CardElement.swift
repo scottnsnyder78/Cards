@@ -44,15 +44,17 @@ extension CardElement {
 }
 
 struct ImageElement: CardElement {
-    let id = UUID()
-    var transform = Transform()
-    var image: Image {
-        Image(
-            uiImage: uiImage ??
-            UIImage(named: "error-image") ??
-            UIImage())
-    }
-    var uiImage: UIImage?
+  let id = UUID()
+  var transform = Transform()
+  var uiImage: UIImage?
+    var frameIndex: Int?
+
+  var image: Image {
+    Image(
+      uiImage: uiImage ??
+        UIImage(named: "error-image") ??
+        UIImage())
+  }
 }
 
 struct TextElement: CardElement {

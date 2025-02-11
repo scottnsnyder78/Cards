@@ -31,61 +31,41 @@
 /// THE SOFTWARE.
 
 import SwiftUI
+import PhotosUI
 
-struct CardElementView: View {
-  let element: CardElement
+struct PhotosModal: View {
+  @Binding var card: Card
+  @State private var selectedItems: [PhotosPickerItem] = []
 
   var body: some View {
-    if let element = element as? ImageElement {
-      ImageElementView(element: element)
-            .clip()
+    PhotosPicker(
+      selection: $selectedItems,
+      matching: .images) {
+        ToolbarButton(modal: .photoModal)
     }
-    if let element = element as? TextElement {
-      TextElementView(element: element)
-    }
-  }
-}
-
-struct ImageElementView: View {
-  let element: ImageElement
-
-  var body: some View {
-    element.image
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-  }
-}
-
-struct TextElementView: View {
-  let element: TextElement
-
-  var body: some View {
-    if !element.text.isEmpty {
-      Text(element.text)
-        .font(.custom(element.textFont, size: 200))
-        .foregroundColor(element.textColor)
-        .scalableText()
+    .onChange(of: selectedItems) { items in
+      for item in items {
+        item.loadTransferable(type: Data.self) { result in
+          Task {
+            switch result {
+            case .success(let data):
+              if let data,
+                let uiImage = UIImage(data: data) {
+                card.addElement(uiImage: uiImage)
+              }
+            case .failure(let failure):
+              fatalError("Image transfer failed: \(failure)")
+            }
+          }
+        }
+      }
+      selectedItems = []
     }
   }
 }
 
-struct CardElementView_Previews: PreviewProvider {
+struct PhotosModal_Previews: PreviewProvider {
   static var previews: some View {
-    CardElementView(element: initialElements[0])
+    PhotosModal(card: .constant(Card()))
   }
-}
-
-private extension ImageElementView {
- // 2
- @ViewBuilder
- func clip() -> some View {
- // 3
- if let frameIndex = element.frameIndex {
- // 4
- let shape = Shapes.shapes[frameIndex]
- self
- .clipShape(shape)
- .contentShape(shape)
- } else { self }
- }
 }

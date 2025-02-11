@@ -1,4 +1,4 @@
-/// Copyright (c) 2023 Kodeco
+/// Copyright (c) 2025 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -32,60 +32,43 @@
 
 import SwiftUI
 
-struct CardElementView: View {
-  let element: CardElement
-
-  var body: some View {
-    if let element = element as? ImageElement {
-      ImageElementView(element: element)
-            .clip()
-    }
-    if let element = element as? TextElement {
-      TextElementView(element: element)
-    }
-  }
-}
-
-struct ImageElementView: View {
-  let element: ImageElement
-
-  var body: some View {
-    element.image
-      .resizable()
-      .aspectRatio(contentMode: .fit)
-  }
-}
-
-struct TextElementView: View {
-  let element: TextElement
-
-  var body: some View {
-    if !element.text.isEmpty {
-      Text(element.text)
-        .font(.custom(element.textFont, size: 200))
-        .foregroundColor(element.textColor)
-        .scalableText()
-    }
-  }
-}
-
-struct CardElementView_Previews: PreviewProvider {
-  static var previews: some View {
-    CardElementView(element: initialElements[0])
-  }
-}
-
-private extension ImageElementView {
+struct FrameModal: View {
+ @Environment(\.dismiss) var dismiss
+ // 1
+ @Binding var frameIndex: Int?
+ private let columns = [
+ GridItem(.adaptive(minimum: 120), spacing: 10)
+ ]
+ private let style = StrokeStyle(
+ lineWidth: 5,
+ lineJoin: .round)
+ var body: some View {
+ ScrollView {
+ LazyVGrid(columns: columns) {
  // 2
- @ViewBuilder
- func clip() -> some View {
+ ForEach(0..<Shapes.shapes.count, id: \.self) { index in
+ Shapes.shapes[index]
  // 3
- if let frameIndex = element.frameIndex {
+ .stroke(Color.primary, style: style)
  // 4
- let shape = Shapes.shapes[frameIndex]
- self
- .clipShape(shape)
- .contentShape(shape)
- } else { self }
+ .background(
+ Shapes.shapes[index].fill(Color.secondary))
+ .frame(width: 100, height: 120)
+ .padding()
+ // 5
+ .onTapGesture {
+ frameIndex = index
+ dismiss()
+ }
+ }
+ }
+ }
+ .padding(5)
+ }
+}
+
+struct FrameModal_Previews: PreviewProvider {
+ static var previews: some View {
+ FrameModal(frameIndex: .constant(nil))
  }
 }
