@@ -48,7 +48,6 @@ struct CardElementView: View {
 
 struct ImageElementView: View {
   let element: ImageElement
-    var imageFilename: String?
 
   var body: some View {
     element.image
