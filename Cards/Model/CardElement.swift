@@ -46,8 +46,9 @@ extension CardElement {
 struct ImageElement: CardElement {
   let id = UUID()
   var transform = Transform()
+  var frameIndex: Int?
   var uiImage: UIImage?
-    var frameIndex: Int?
+    var imageFilename: String?
 
   var image: Image {
     Image(
@@ -55,6 +56,38 @@ struct ImageElement: CardElement {
         UIImage(named: "error-image") ??
         UIImage())
   }
+}
+
+extension ImageElement: Codable {
+    enum CodingKeys: CodingKey {
+     case transform, imageFilename, frameIndex
+    }
+    init(from decoder: Decoder) throws {
+     let container = try decoder
+     .container(keyedBy: CodingKeys.self)
+     // 1
+     transform = try container
+     .decode(Transform.self, forKey: .transform)
+     frameIndex = try container
+     .decodeIfPresent(Int.self, forKey: .frameIndex)
+     // 2
+     imageFilename = try container.decodeIfPresent(
+     String.self,
+     forKey: .imageFilename)
+     // 3
+     if let imageFilename {
+     uiImage = UIImage.load(uuidString: imageFilename)
+     } else {
+     // 4
+     uiImage = UIImage.errorImage
+     }
+    }
+    func encode(to encoder: Encoder) throws {
+     var container = encoder.container(keyedBy: CodingKeys.self)
+     try container.encode(transform, forKey: .transform)
+     try container.encode(frameIndex, forKey: .frameIndex)
+     try container.encode(imageFilename, forKey: .imageFilename)
+    }
 }
 
 struct TextElement: CardElement {

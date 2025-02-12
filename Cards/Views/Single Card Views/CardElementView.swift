@@ -38,7 +38,7 @@ struct CardElementView: View {
   var body: some View {
     if let element = element as? ImageElement {
       ImageElementView(element: element)
-            .clip()
+        .clip()
     }
     if let element = element as? TextElement {
       TextElementView(element: element)
@@ -48,6 +48,7 @@ struct CardElementView: View {
 
 struct ImageElementView: View {
   let element: ImageElement
+    var imageFilename: String?
 
   var body: some View {
     element.image
@@ -76,16 +77,13 @@ struct CardElementView_Previews: PreviewProvider {
 }
 
 private extension ImageElementView {
- // 2
- @ViewBuilder
- func clip() -> some View {
- // 3
- if let frameIndex = element.frameIndex {
- // 4
- let shape = Shapes.shapes[frameIndex]
- self
- .clipShape(shape)
- .contentShape(shape)
- } else { self }
- }
+  @ViewBuilder
+  func clip() -> some View {
+    if let frameIndex = element.frameIndex {
+      let shape = Shapes.shapes[frameIndex]
+      self
+        .clipShape(shape)
+        .contentShape(shape)
+    } else { self }
+  }
 }

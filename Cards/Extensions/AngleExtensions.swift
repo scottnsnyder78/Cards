@@ -1,4 +1,4 @@
-/// Copyright (c) 2023 Kodeco
+/// Copyright (c) 2025 Kodeco
 /// 
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -31,13 +31,18 @@
 /// THE SOFTWARE.
 
 import SwiftUI
-
-struct Transform {
-  var size = CGSize(
-    width: Settings.defaultElementSize.width,
-    height: Settings.defaultElementSize.height)
-  var rotation: Angle = .zero
-  var offset: CGSize = .zero
+extension Angle: Codable {
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let degrees = try container
+         .decode(Double.self, forKey: .degrees)
+        self.init(degrees: degrees)
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(degrees, forKey: .degrees)
+    }
+    enum CodingKeys: CodingKey {
+        case degrees
+    }
 }
-
-extension Transform: Codable {}

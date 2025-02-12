@@ -33,34 +33,44 @@
 import SwiftUI
 
 struct Card: Identifiable {
-  let id = UUID()
-  var backgroundColor: Color = .yellow
-  var elements: [CardElement] = []
+    var id = UUID()
+    var backgroundColor: Color = .yellow
+    var elements: [CardElement] = []
 
-  mutating func addElement(uiImage: UIImage) {
-    let element = ImageElement(uiImage: uiImage)
-    elements.append(element)
-  }
-
-  mutating func addElement(text: TextElement) {
-    elements.append(text)
-  }
-
-  mutating func addElements(from transfer: [CustomTransfer]) {
-    for element in transfer {
-      if let text = element.text {
-        addElement(text: TextElement(text: text))
-      } else if let image = element.image {
-        addElement(uiImage: image)
-      }
+    mutating func addElement(uiImage: UIImage) {
+        // 1
+        let imageFilename = uiImage.save()
+        // 2
+        let element = ImageElement(
+            uiImage: uiImage,
+            imageFilename: imageFilename)
+        elements.append(element)
+        save()
     }
-  }
 
-  mutating func remove(_ element: CardElement) {
-    if let index = element.index(in: elements) {
-      elements.remove(at: index)
+    mutating func addElement(text: TextElement) {
+        elements.append(text)
     }
-  }
+
+    mutating func addElements(from transfer: [CustomTransfer]) {
+        for element in transfer {
+            if let text = element.text {
+                addElement(text: TextElement(text: text))
+            } else if let image = element.image {
+                addElement(uiImage: image)
+            }
+        }
+    }
+
+    mutating func remove(_ element: CardElement) {
+        if let element = element as? ImageElement {
+         UIImage.remove(name: element.imageFilename)
+        }
+        if let index = element.index(in: elements) {
+            elements.remove(at: index)
+        }
+        save()
+    }
 
     mutating func update(_ element: CardElement?, frameIndex: Int) {
         if let element = element as? ImageElement,
@@ -69,5 +79,46 @@ struct Card: Identifiable {
             newElement.frameIndex = frameIndex
             elements[index] = newElement
         }
+    }
+
+    func save() {
+     do {
+     // 1
+     let encoder = JSONEncoder()
+     // 2
+     let data = try encoder.encode(self)
+     // 3
+     let filename = "\(id).rwcard"
+     let url = URL.documentsDirectory
+     .appendingPathComponent(filename)
+     // 4
+     try data.write(to: url)
+     } catch {
+     print(error.localizedDescription)
+     }
+    }
+
+}
+
+extension Card: Codable {
+ enum CodingKeys: CodingKey {
+ case id, backgroundColor, imageElements, textElements
+ }
+    init(from decoder: Decoder) throws {
+     let container = try decoder
+     .container(keyedBy: CodingKeys.self)
+     // 1
+     let id = try container.decode(String.self, forKey: .id)
+     self.id = UUID(uuidString: id) ?? UUID()
+     // 2
+     elements += try container
+     .decode([ImageElement].self, forKey: .imageElements)
+    }
+    func encode(to encoder: Encoder) throws {
+     var container = encoder.container(keyedBy: CodingKeys.self)
+     try container.encode(id.uuidString, forKey: .id)
+     let imageElements: [ImageElement] =
+     elements.compactMap { $0 as? ImageElement }
+     try container.encode(imageElements, forKey: .imageElements)
     }
 }
